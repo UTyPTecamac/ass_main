@@ -11,29 +11,59 @@
       padding: 20px;
       background: #111;
       color: #eee;
-      max-width: 800px;
+      max-width: 900px;
       margin: 0 auto;
     }
     h1 { text-align: center; margin-bottom: 30px; }
-    .custom-controls {
+    
+    .video-container {
+      position: relative;
+      width: 100%;
+    }
+    
+    .video-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
       display: flex;
-      gap: 10px;
-      margin-top: 12px;
-      flex-wrap: wrap;
+      align-items: center;
       justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
     }
-    .custom-controls button {
-      padding: 10px 16px;
+    
+    .video-container:hover .video-overlay {
+      opacity: 1;
+    }
+    
+    .play-btn {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: #22c55e;
       border: none;
-      border-radius: 6px;
       cursor: pointer;
-      background: #2563eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
       color: white;
-      font-weight: 500;
-      font-size: 14px;
+      box-shadow: 0 4px 20px rgba(34, 197, 94, 0.5);
+      transition: transform 0.2s ease, background 0.2s ease;
     }
-    .custom-controls button:hover { background: #1d4ed8; }
-    .custom-controls button:active { background: #1e40af; }
+    
+    .play-btn:hover {
+      transform: scale(1.1);
+      background: #16a34a;
+    }
+    
+    .play-btn:active {
+      transform: scale(0.95);
+    }
+    
     #status {
       margin-top: 15px;
       padding: 10px;
@@ -49,10 +79,11 @@
 
   <h1>Reproductor YouTube con Plyr (Local)</h1>
 
-  <div id="player" data-plyr-provider="youtube" data-plyr-embed-id="pTOvpdORoUI"></div>
-
-  <div class="custom-controls">
-    <button onclick="togglePlay()">▶</button>
+  <div class="video-container">
+    <div id="player" data-plyr-provider="youtube" data-plyr-embed-id="pTOvpdORoUI"></div>
+    <div class="video-overlay">
+      <button class="play-btn" id="playBtn" onclick="togglePlay()">▶</button>
+    </div>
   </div>
 
   <div id="status">Listo para reproducir</div>
@@ -80,11 +111,13 @@
 
     player.on('play', () => {
       isPlaying = true;
+      document.getElementById('playBtn').textContent = '⏸';
       updateStatus('▶ Reproduciendo');
     });
 
     player.on('pause', () => {
       isPlaying = false;
+      document.getElementById('playBtn').textContent = '▶';
       updateStatus('⏸ Pausado');
     });
 
