@@ -189,17 +189,7 @@
             }
             player = new YT.Player('player', {
                 videoId: videoId,
-                playerVars: {
-                    'controls': 0,
-                    'disablekb': 1,
-                    'fs': 0,
-                    'modestbranding': 1,
-                    'rel': 0,
-                    'showinfo': 0,
-                    'iv_load_policy': 3,
-                    'enablejsapi': 1,
-                    'origin': window.location.origin
-                },
+                playerVars: playerVars,
                 events: {
                     'onReady': onPlayerReady,
                     'onStateChange': onPlayerStateChange
