@@ -268,13 +268,21 @@
         }
 
         function onYouTubeIframeAPIReady() {
-            var videoParam = getUrlParam('vd');
+            var videoParam = getHashParam() || getUrlParam('vd');
             if (videoParam) {
                 var videoId = getVideoId(videoParam);
                 if (videoId) {
                     loadVideo(videoId);
                 }
             }
+        }
+
+        function getHashParam() {
+            var hash = window.location.hash;
+            if (hash && hash.length > 1) {
+                return decodeURIComponent(hash.substring(1));
+            }
+            return null;
         }
 
         function getUrlParam(name) {
@@ -299,9 +307,7 @@
                     'showinfo': 0,
                     'iv_load_policy': 3,
                     'enablejsapi': 1,
-                    'origin': '*',
-                    'cc_load_policy': 0,
-                    'cc_lang_pref': 'es',
+                    'origin': window.location.origin,
                     'vq': 'auto'
                 },
                 events: {
