@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube + Botones Custom - Plyr Local</title>
+  <link rel="stylesheet" href="css/plyr.css">
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      padding: 20px;
+      background: #111;
+      color: #eee;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1 { text-align: center; margin-bottom: 30px; }
+    .custom-controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .custom-controls button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #2563eb;
+      color: white;
+      font-weight: 500;
+      font-size: 14px;
+    }
+    .custom-controls button:hover { background: #1d4ed8; }
+    .custom-controls button:active { background: #1e40af; }
+    #status {
+      margin-top: 15px;
+      padding: 10px;
+      background: #1e1e1e;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 14px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Reproductor YouTube con Plyr (Local)</h1>
+
+  <div id="player" data-plyr-provider="youtube" data-plyr-embed-id="pTOvpdORoUI"></div>
+
+  <div class="custom-controls">
+    <button onclick="playVideo()">▶ Play</button>
+    <button onclick="pauseVideo()">⏸ Pausa</button>
+    <button onclick="forward()">⏩ +10s</button>
+    <button onclick="rewind()">⏪ -10s</button>
+    <button onclick="toggleSpeed()">🔁 Velocidad</button>
+    <button onclick="toggleCaptions()">💬 Subtítulos</button>
+  </div>
+
+  <div id="status">Listo para reproducir</div>
+
+  <script src="js/plyr.js"></script>
+  <script>
+    let speed = 1;
+    let isPlaying = false;
+
+    const player = new Plyr('#player', {
+      iconUrl: 'assets/plyr.svg',
+      controls: [],
+      tooltips: { controls: true, seek: true }
+    });
+
+    player.on('ready', () => {
+      updateStatus(' Reproductor listo');
+    });
+
+    player.on('play', () => {
+      isPlaying = true;
+      updateStatus('▶ Reproduciendo');
+    });
+
+    player.on('pause', () => {
+      isPlaying = false;
+      updateStatus('⏸ Pausado');
+    });
+
+    player.on('timeupdate', () => {
+      const time = formatTime(player.currentTime);
+      updateStatus(`Tiempo: ${time}`);
+    });
+
+    function playVideo() { player.play(); }
+    function pauseVideo() { player.pause(); }
+
+    function forward() {
+      player.currentTime = Math.min(player.currentTime + 10, player.duration);
+    }
+
+    function rewind() {
+      player.currentTime = Math.max(player.currentTime - 10, 0);
+    }
+
+    function toggleSpeed() {
+      speed = speed === 1 ? 1.5 : 1;
+      player.speed = speed;
+      updateStatus(`🔁 Velocidad: ${speed}x`);
+    }
+
+    function toggleCaptions() {
+      const enabled = player.captions.active;
+      player.toggleCaptions(!enabled);
+      updateStatus(enabled ? '💬 Subtítulos off' : '💬 Subtítulos on');
+    }
+
+    function formatTime(seconds) {
+      if (!seconds) return '0:00';
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function updateStatus(msg) {
+      document.getElementById('status').textContent = msg;
+    }
+  </script>
+</body>
+</html>
