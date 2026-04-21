@@ -52,25 +52,26 @@
   <div id="player" data-plyr-provider="youtube" data-plyr-embed-id="pTOvpdORoUI"></div>
 
   <div class="custom-controls">
-    <button onclick="playVideo()">▶ Play</button>
-    <button onclick="pauseVideo()">⏸ Pausa</button>
-    <button onclick="forward()">⏩ +10s</button>
-    <button onclick="rewind()">⏪ -10s</button>
-    <button onclick="toggleSpeed()">🔁 Velocidad</button>
-    <button onclick="toggleCaptions()">💬 Subtítulos</button>
+    <button onclick="togglePlay()">▶</button>
   </div>
 
   <div id="status">Listo para reproducir</div>
 
   <script src="js/plyr.js"></script>
   <script>
-    let speed = 1;
     let isPlaying = false;
 
     const player = new Plyr('#player', {
       iconUrl: 'assets/plyr.svg',
       controls: [],
-      tooltips: { controls: true, seek: true }
+      tooltips: { controls: true, seek: true },
+      youtube: {
+        noCookie: true,
+        rel: 0,
+        showinfo: 0,
+        iv_load_policy: 3,
+        modestbranding: 1
+      }
     });
 
     player.on('ready', () => {
@@ -92,27 +93,12 @@
       updateStatus(`Tiempo: ${time}`);
     });
 
-    function playVideo() { player.play(); }
-    function pauseVideo() { player.pause(); }
-
-    function forward() {
-      player.currentTime = Math.min(player.currentTime + 10, player.duration);
-    }
-
-    function rewind() {
-      player.currentTime = Math.max(player.currentTime - 10, 0);
-    }
-
-    function toggleSpeed() {
-      speed = speed === 1 ? 1.5 : 1;
-      player.speed = speed;
-      updateStatus(`🔁 Velocidad: ${speed}x`);
-    }
-
-    function toggleCaptions() {
-      const enabled = player.captions.active;
-      player.toggleCaptions(!enabled);
-      updateStatus(enabled ? '💬 Subtítulos off' : '💬 Subtítulos on');
+    function togglePlay() {
+      if (player.playing) {
+        player.pause();
+      } else {
+        player.play();
+      }
     }
 
     function formatTime(seconds) {
