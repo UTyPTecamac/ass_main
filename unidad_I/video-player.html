@@ -12,7 +12,7 @@
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #1a1a1a;
+            background: #ffffff;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -28,7 +28,8 @@
             position: relative;
             width: 100%;
             padding-top: 100%;
-            background: #000;
+            background: #ffffff;
+            border: 1px solid #ddd;
             border-radius: 12px;
             overflow: hidden;
         }
@@ -40,42 +41,23 @@
             height: 100%;
         }
         .controls {
-            position: relative;
-            z-index: 10;
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 20;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 24px;
+            padding: 8px;
+            display: none;
+            flex-direction: column;
+            gap: 4px;
         }
-        .controls {
-            background: #2a2a2a;
-            padding: 16px;
-            border-radius: 12px;
-            margin-top: 12px;
-        }
-        .progress-container {
-            width: 100%;
-            margin-bottom: 12px;
-        }
-        .progress-bar {
-            width: 100%;
-            height: 6px;
-            background: #444;
-            border-radius: 3px;
-            cursor: pointer;
-            position: relative;
-        }
-        .progress {
-            height: 100%;
-            background: #f00;
-            border-radius: 3px;
-            width: 0%;
-            transition: width 0.1s;
-        }
-        .time-display {
+        .video-wrapper:hover .controls,
+        .video-wrapper:focus-within .controls {
             display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: #888;
-            margin-top: 6px;
         }
-        .buttons {
+.buttons {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -84,9 +66,9 @@
         .btn {
             background: none;
             border: none;
-            color: white;
+            color: #333;
             cursor: pointer;
-            padding: 8px;
+            padding: 6px;
             border-radius: 50%;
             transition: background 0.2s;
             display: flex;
@@ -94,7 +76,27 @@
             justify-content: center;
         }
         .btn:hover {
-            background: #444;
+            background: rgba(0, 0, 0, 0.1);
+        }
+        .btn svg {
+            width: 18px;
+            height: 18px;
+        }
+        .network-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            color: #4CAF50;
+        }
+        .network-status.slow {
+            color: #ff9800;
+        }
+        .network-status.offline {
+            color: #f44336;
+        }
+        .btn:hover {
+            background: #eee;
         }
         .btn, .progress-bar, .volume-slider {
             position: relative;
@@ -107,27 +109,10 @@
         .btn-large {
             width: 48px;
             height: 48px;
-            background: #f00;
+            background: #333;
         }
         .btn-large:hover {
-            background: #d00;
-        }
-        .url-input-container {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-        .url-input {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            background: #2a2a2a;
-            color: white;
-            font-size: 14px;
-        }
-        .url-input:focus {
-            outline: 2px solid #f00;
+            background: #555;
         }
         #overlay {
             position: absolute;
@@ -135,17 +120,34 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 10;
+            z-index: 5;
             pointer-events: auto;
         }
         #loading {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 16px;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             z-index: 5;
+        }
+        .watermark {
+            text-align: center;
+            color: #2E7D32;
+            opacity: 0.5;
+            pointer-events: none;
+            user-select: none;
+        }
+        .wm-line1 {
+            font-size: 32px;
+            font-weight: bold;
+        }
+        .wm-line2 {
+            font-size: 20px;
+            font-weight: normal;
         }
         .volume-container {
             display: flex;
@@ -156,7 +158,7 @@
             width: 80px;
             height: 4px;
             -webkit-appearance: none;
-            background: #444;
+            background: #ddd;
             border-radius: 2px;
             cursor: pointer;
         }
@@ -164,14 +166,14 @@
             -webkit-appearance: none;
             width: 12px;
             height: 12px;
-            background: white;
+            background: #333;
             border-radius: 50%;
             cursor: pointer;
         }
         .volume-slider::-moz-range-thumb {
             width: 12px;
             height: 12px;
-            background: white;
+            background: #333;
             border-radius: 50%;
             cursor: pointer;
             border: none;
@@ -180,35 +182,22 @@
 </head>
 <body>
     <div class="player-container">
-        <div class="url-input-container">
-            <input type="text" id="videoUrl" class="url-input" placeholder="https://www.youtube.com/shorts/..." value="https://www.youtube.com/shorts/pTOvpdORoUI">
-            <button class="btn btn-large" id="loadVideoBtn">Cargar</button>
-        </div>
         <div class="video-wrapper">
-            <div id="loading">Cargando contenido...</div>
-            <div id="player"></div>
-            <div id="overlay"></div>
-        </div>
-        <div class="controls">
-            <div class="progress-container">
-                <div class="progress-bar" id="progressBar">
-                    <div class="progress" id="progress"></div>
-                </div>
-                <div class="time-display">
-                    <span id="currentTime">0:00</span>
-                    <span id="duration">0:00</span>
+            <div id="loading">
+                <div class="watermark">
+                    <div class="wm-line1">Modalidad</div>
+                    <div class="wm-line2">Mixta</div>
                 </div>
             </div>
-            <div class="buttons">
-                <div class="volume-container">
-                    <button class="btn" id="muteBtn">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path id="volumeIcon" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
-                        </svg>
-                    </button>
-                    <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="100">
+            <div id="player"></div>
+            <div id="overlay"></div>
+<div class="controls">
+                <div class="network-status" id="networkStatus">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
+                        <path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l2 2c2.97-2.97 8.03-2.97 11 0l2-2c-4.97-4.97-13.03-4.97-18 0zm-2 8l2 2c1.97-1.97 5.03-1.97 7 0l2-2c-3.97-3.97-10.03-3.97-14 0z"/>
+                    </svg>
                 </div>
-                <button class="btn btn-large" id="playPauseBtn">
+                <button class="btn" id="playPauseBtn">
                     <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M8 5v14l11-7z"/>
                     </svg>
@@ -216,18 +205,23 @@
                         <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
                     </svg>
                 </button>
+                <button class="btn" id="muteBtn">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                        <path id="volumeIcon" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                    </svg>
+                </button>
                 <button class="btn" id="rewindBtn">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
                         <path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/>
                     </svg>
                 </button>
                 <button class="btn" id="forwardBtn">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
                         <path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/>
                     </svg>
                 </button>
                 <button class="btn" id="fullscreenBtn">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
                         <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
                     </svg>
                 </button>
@@ -235,44 +229,29 @@
         </div>
     </div>
 
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script>
         var player;
         var isPlaying = false;
         var updateInterval;
+        var startTime;
+        var bytesLoaded;
 
-        function getVideoId(url) {
-            var match = url.match(/(?:v=|shorts\/|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);
-            return match ? match[1] : null;
-        }
-
-        function loadVideo(videoId) {
-            if (!player || !player.loadVideoById) {
-                player = new YT.Player('player', {
-                    videoId: videoId,
-                    playerVars: {
-                        'controls': 0,
-                        'disablekb': 1,
-                        'fs': 0,
-                        'modestbranding': 1,
-                        'rel': 0,
-                        'showinfo': 0,
-                        'iv_load_policy': 3,
-                        'enablejsapi': 1,
-                        'origin': window.location.origin
-                    },
-                    events: {
-                        'onReady': onPlayerReady,
-                        'onStateChange': onPlayerStateChange
-                    }
-                });
-            } else {
-                player.loadVideoById(videoId);
+        function detectNetworkSpeed() {
+            var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            var networkStatus = document.getElementById('networkStatus');
+            if (connection) {
+                var effectiveType = connection.effectiveType;
+                if (effectiveType === '4g') {
+                    networkStatus.className = 'network-status';
+                } else if (effectiveType === '3g') {
+                    networkStatus.className = 'network-status slow';
+                } else if (effectiveType === '2g' || effectiveType === 'slow-2g') {
+                    networkStatus.className = 'network-status slow';
+                } else {
+                    networkStatus.className = 'network-status';
+                }
             }
-        }
-
-        function onPlayerReady(event) {
-            document.getElementById('loading').style.display = 'none';
-            updateDuration();
         }
 
         function onPlayerStateChange(event) {
@@ -280,10 +259,90 @@
                 isPlaying = true;
                 updatePlayPauseButton();
                 startProgressUpdate();
+                startTime = Date.now();
+                detectNetworkSpeed();
             } else if (event.data == YT.PlayerState.PAUSED || event.data == YT.PlayerState.ENDED) {
                 isPlaying = false;
                 updatePlayPauseButton();
                 stopProgressUpdate();
+            } else if (event.data == YT.PlayerState.BUFFERING) {
+                var elapsed = (Date.now() - startTime) / 1000;
+                if (elapsed > 0 && player && player.getVideoBytesLoaded) {
+                    var loaded = player.getVideoBytesLoaded();
+                    if (loaded > 0 && elapsed > 0) {
+                        var speedMbps = (loaded * 8) / (elapsed * 1000000);
+                        var networkStatus = document.getElementById('networkStatus');
+                        if (speedMbps < 1) {
+                            networkStatus.className = 'network-status slow';
+                        } else {
+                            networkStatus.className = 'network-status';
+                        }
+                    }
+                }
+            }
+        }
+
+        function onYouTubeIframeAPIReady() {
+            var videoParam = getUrlParam('vd');
+            if (videoParam) {
+                var videoId = getVideoId(videoParam);
+                if (videoId) {
+                    loadVideo(videoId);
+                }
+            }
+        }
+
+        function getUrlParam(name) {
+            var params = new URLSearchParams(window.location.search);
+            return params.get(name);
+        }
+
+        function getVideoId(url) {
+            var match = url.match(/(?:v=|shorts\/|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);
+            return match ? match[1] : null;
+        }
+
+        function loadVideo(videoId) {
+            player = new YT.Player('player', {
+                videoId: videoId,
+                playerVars: {
+                    'controls': 0,
+                    'disablekb': 1,
+                    'fs': 0,
+                    'modestbranding': 1,
+                    'rel': 0,
+                    'showinfo': 0,
+                    'iv_load_policy': 3,
+                    'enablejsapi': 1,
+                    'origin': window.location.origin,
+                    'cc_load_policy': 0,
+                    'cc_lang_pref': 'es',
+                    'vq': 'auto'
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data == YT.PlayerState.PLAYING) {
+                isPlaying = true;
+                updatePlayPauseButton();
+                startProgressUpdate();
+                document.getElementById('loading').style.display = 'none';
+            } else if (event.data == YT.PlayerState.PAUSED || event.data == YT.PlayerState.ENDED) {
+                isPlaying = false;
+                updatePlayPauseButton();
+                stopProgressUpdate();
+                document.getElementById('loading').style.display = 'flex';
+            } else if (event.data == YT.PlayerState.BUFFERING) {
+                document.getElementById('loading').style.display = 'flex';
             }
         }
 
@@ -325,15 +384,12 @@
         }
 
         document.getElementById('playPauseBtn').addEventListener('click', function() {
-            console.log('Play button clicked, player:', player, 'isPlaying:', isPlaying);
             if (player) {
                 if (isPlaying) {
                     player.pauseVideo();
                 } else {
                     player.playVideo();
                 }
-            } else {
-                console.log('Player not ready yet');
             }
         });
 
@@ -401,23 +457,6 @@
                 container.webkitRequestFullscreen();
             }
         });
-
-        document.getElementById('loadVideoBtn').addEventListener('click', function() {
-            var url = document.getElementById('videoUrl').value;
-            var videoId = getVideoId(url);
-            if (videoId) {
-                loadVideo(videoId);
-            } else {
-                alert('URL de video inválida');
-            }
-        });
-
-        var defaultUrl = document.getElementById('videoUrl').value;
-        var defaultVideoId = getVideoId(defaultUrl);
-        if (defaultVideoId) {
-            loadVideo(defaultVideoId);
-        }
     </script>
-    <script src="https://www.youtube.com/iframe_api"></script>
 </body>
 </html>
