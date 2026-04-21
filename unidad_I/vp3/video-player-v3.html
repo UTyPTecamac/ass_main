@@ -122,17 +122,17 @@
       document.getElementById('loadingText').style.display = 'none';
       document.getElementById('playBtn').style.display = 'flex';
       document.getElementById('labelText').style.display = 'block';
-      document.getElementById('overlay').classList.add('paused');
+      document.getElementById('overlay').style.display = 'flex';
     });
 
     player.on('play', () => {
       document.getElementById('playBtn').textContent = '⏸';
-      document.getElementById('overlay').classList.remove('paused');
+      document.getElementById('overlay').style.display = 'none';
     });
 
     player.on('pause', () => {
       document.getElementById('playBtn').textContent = '▶';
-      document.getElementById('overlay').classList.add('paused');
+      document.getElementById('overlay').style.display = 'flex';
     });
 
     function togglePlay() {
