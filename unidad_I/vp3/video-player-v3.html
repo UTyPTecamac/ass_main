@@ -3,22 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YouTube + Botones Custom - Plyr Local</title>
+  <title>Modelo Mix</title>
   <link rel="stylesheet" href="css/plyr.css">
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
     body {
       font-family: system-ui, sans-serif;
-      padding: 20px;
-      background: #111;
-      color: #eee;
-      max-width: 900px;
-      margin: 0 auto;
+      background: #000;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    h1 { text-align: center; margin-bottom: 30px; }
     
     .video-container {
       position: relative;
       width: 100%;
+      max-width: 900px;
     }
     
     .video-overlay {
@@ -29,6 +31,7 @@
       height: 100%;
       z-index: 10;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       opacity: 0;
@@ -37,6 +40,10 @@
     
     .video-container:hover .video-overlay {
       opacity: 1;
+    }
+    
+    .video-overlay.paused {
+      background: rgba(255, 255, 255, 0.9);
     }
     
     .play-btn {
@@ -64,34 +71,26 @@
       transform: scale(0.95);
     }
     
-    #status {
+    .label {
       margin-top: 15px;
-      padding: 10px;
-      background: #1e1e1e;
-      border-radius: 6px;
-      text-align: center;
-      font-size: 14px;
-      color: #888;
+      font-size: 18px;
+      font-weight: 600;
+      color: #22c55e;
     }
   </style>
 </head>
 <body>
 
-  <h1>Reproductor YouTube con Plyr (Local)</h1>
-
   <div class="video-container">
     <div id="player" data-plyr-provider="youtube" data-plyr-embed-id="pTOvpdORoUI"></div>
-    <div class="video-overlay">
+    <div class="video-overlay" id="overlay">
       <button class="play-btn" id="playBtn" onclick="togglePlay()">▶</button>
+      <div class="label">Modelo Mix</div>
     </div>
   </div>
 
-  <div id="status">Listo para reproducir</div>
-
   <script src="js/plyr.js"></script>
   <script>
-    let isPlaying = false;
-
     const player = new Plyr('#player', {
       iconUrl: 'assets/plyr.svg',
       controls: [],
@@ -105,25 +104,18 @@
       }
     });
 
-    player.on('ready', () => {
-      updateStatus(' Reproductor listo');
-    });
-
     player.on('play', () => {
-      isPlaying = true;
       document.getElementById('playBtn').textContent = '⏸';
-      updateStatus('▶ Reproduciendo');
+      document.getElementById('overlay').classList.remove('paused');
     });
 
     player.on('pause', () => {
-      isPlaying = false;
       document.getElementById('playBtn').textContent = '▶';
-      updateStatus('⏸ Pausado');
+      document.getElementById('overlay').classList.add('paused');
     });
 
-    player.on('timeupdate', () => {
-      const time = formatTime(player.currentTime);
-      updateStatus(`Tiempo: ${time}`);
+    player.on('ready', () => {
+      document.getElementById('overlay').classList.add('paused');
     });
 
     function togglePlay() {
@@ -132,17 +124,6 @@
       } else {
         player.play();
       }
-    }
-
-    function formatTime(seconds) {
-      if (!seconds) return '0:00';
-      const mins = Math.floor(seconds / 60);
-      const secs = Math.floor(seconds % 60);
-      return `${mins}:${secs.toString().padStart(2, '0')}`;
-    }
-
-    function updateStatus(msg) {
-      document.getElementById('status').textContent = msg;
     }
   </script>
 </body>
