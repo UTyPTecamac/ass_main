@@ -29,16 +29,18 @@
       aspect-ratio: 9 / 16;
       max-width: 350px;
       margin: 0 auto;
+      overflow: hidden;
+      border-radius: 8px;
     }
     
     .video-container iframe,
     .video-container .plyr {
       position: absolute;
       top: 0;
-      left: 0;
-      width: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 177.78%;
       height: 100%;
-      border-radius: 8px;
       opacity: 0;
       transition: opacity 0.3s ease;
     }
@@ -104,7 +106,7 @@
 
   <div class="video-wrapper">
     <div class="video-container">
-      <div id="player" data-plyr-provider="youtube" data-plyr-embed-id="pTOvpdORoUI"></div>
+      <div id="player" data-plyr-provider="youtube" data-plyr-embed-id=""></div>
     <div class="video-overlay" id="overlay">
       <div class="loading" id="loadingText">Preparando contenido...</div>
       <button class="play-btn" id="playBtn" onclick="togglePlay()" style="display:none">▶</button>
@@ -115,6 +117,10 @@
 
   <script src="js/plyr.js"></script>
   <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const videoId = urlParams.get('v') || 'P7Z-J5qd3eo';
+    document.getElementById('player').setAttribute('data-plyr-embed-id', videoId);
+
     const player = new Plyr('#player', {
       iconUrl: 'assets/plyr.svg',
       controls: [],
