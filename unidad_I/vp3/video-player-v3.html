@@ -63,6 +63,7 @@
       align-items: center;
       justify-content: center;
       background: white;
+      transition: opacity 0.5s ease;
     }
     
     .play-btn {
@@ -98,7 +99,27 @@
     }
     
     .loading {
-      font-size: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(34, 138, 108, 0.2);
+      border-top-color: #228a6c;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .loading-text {
+      font-size: 14px;
       color: #666;
     }
   </style>
@@ -109,7 +130,10 @@
     <div class="video-container">
       <div id="player" data-plyr-provider="youtube" data-plyr-embed-id=""></div>
     <div class="video-overlay" id="overlay">
-      <div class="loading" id="loadingText">Preparando contenido...</div>
+      <div class="loading" id="loadingText">
+        <div class="spinner"></div>
+        <span class="loading-text">Preparando contenido...</span>
+      </div>
       <button class="play-btn" id="playBtn" onclick="togglePlay()" style="display:none">▶</button>
       <div class="label" id="labelText" style="display:none">Modelo Mix</div>
     </div>
@@ -121,6 +145,8 @@
     const urlParams = new URLSearchParams(window.location.search);
     const videoId = urlParams.get('v') || 'P7Z-J5qd3eo';
     document.getElementById('player').setAttribute('data-plyr-embed-id', videoId);
+
+    let firstPlay = true;
 
     const player = new Plyr('#player', {
       iconUrl: 'assets/plyr.svg',
@@ -144,8 +170,18 @@
 
     player.on('play', () => {
       document.getElementById('playBtn').textContent = '⏸';
-      document.getElementById('overlay').style.display = 'none';
       document.querySelector('.video-container').classList.add('playing');
+      
+      if (firstPlay) {
+        firstPlay = false;
+        document.getElementById('overlay').style.opacity = '0';
+        setTimeout(() => {
+          document.getElementById('overlay').style.display = 'none';
+          document.getElementById('overlay').style.opacity = '1';
+        }, 2000);
+      } else {
+        document.getElementById('overlay').style.display = 'none';
+      }
     });
 
     player.on('pause', () => {
