@@ -27,7 +27,7 @@
         .video-wrapper {
             position: relative;
             width: 100%;
-            padding-top: 177.78%;
+            padding-top: 100%;
             background: #000;
             border-radius: 12px;
             overflow: hidden;
@@ -112,6 +112,41 @@
         .btn-large:hover {
             background: #d00;
         }
+        .url-input-container {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .url-input {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #2a2a2a;
+            color: white;
+            font-size: 14px;
+        }
+        .url-input:focus {
+            outline: 2px solid #f00;
+        }
+        #overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            pointer-events: auto;
+        }
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 16px;
+            z-index: 5;
+        }
         .volume-container {
             display: flex;
             align-items: center;
@@ -145,8 +180,14 @@
 </head>
 <body>
     <div class="player-container">
+        <div class="url-input-container">
+            <input type="text" id="videoUrl" class="url-input" placeholder="https://www.youtube.com/shorts/..." value="https://www.youtube.com/shorts/pTOvpdORoUI">
+            <button class="btn btn-large" id="loadVideoBtn">Cargar</button>
+        </div>
         <div class="video-wrapper">
+            <div id="loading">Cargando contenido...</div>
             <div id="player"></div>
+            <div id="overlay"></div>
         </div>
         <div class="controls">
             <div class="progress-container">
@@ -199,28 +240,38 @@
         var isPlaying = false;
         var updateInterval;
 
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('player', {
-                videoId: 'M7lc1UVf-VE',
-                playerVars: {
-                    'controls': 0,
-                    'disablekb': 1,
-                    'fs': 0,
-                    'modestbranding': 1,
-                    'rel': 0,
-                    'showinfo': 0,
-                    'iv_load_policy': 3,
-                    'enablejsapi': 1,
-                    'origin': window.location.origin
-                },
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
-                }
-            });
+        function getVideoId(url) {
+            var match = url.match(/(?:v=|shorts\/|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);
+            return match ? match[1] : null;
+        }
+
+        function loadVideo(videoId) {
+            if (!player || !player.loadVideoById) {
+                player = new YT.Player('player', {
+                    videoId: videoId,
+                    playerVars: {
+                        'controls': 0,
+                        'disablekb': 1,
+                        'fs': 0,
+                        'modestbranding': 1,
+                        'rel': 0,
+                        'showinfo': 0,
+                        'iv_load_policy': 3,
+                        'enablejsapi': 1,
+                        'origin': window.location.origin
+                    },
+                    events: {
+                        'onReady': onPlayerReady,
+                        'onStateChange': onPlayerStateChange
+                    }
+                });
+            } else {
+                player.loadVideoById(videoId);
+            }
         }
 
         function onPlayerReady(event) {
+            document.getElementById('loading').style.display = 'none';
             updateDuration();
         }
 
@@ -350,6 +401,22 @@
                 container.webkitRequestFullscreen();
             }
         });
+
+        document.getElementById('loadVideoBtn').addEventListener('click', function() {
+            var url = document.getElementById('videoUrl').value;
+            var videoId = getVideoId(url);
+            if (videoId) {
+                loadVideo(videoId);
+            } else {
+                alert('URL de video inválida');
+            }
+        });
+
+        var defaultUrl = document.getElementById('videoUrl').value;
+        var defaultVideoId = getVideoId(defaultUrl);
+        if (defaultVideoId) {
+            loadVideo(defaultVideoId);
+        }
     </script>
     <script src="https://www.youtube.com/iframe_api"></script>
 </body>
