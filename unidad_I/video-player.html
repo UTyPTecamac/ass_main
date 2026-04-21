@@ -40,6 +40,10 @@
             height: 100%;
         }
         .controls {
+            position: relative;
+            z-index: 10;
+        }
+        .controls {
             background: #2a2a2a;
             padding: 16px;
             border-radius: 12px;
@@ -91,6 +95,10 @@
         }
         .btn:hover {
             background: #444;
+        }
+        .btn, .progress-bar, .volume-slider {
+            position: relative;
+            z-index: 100;
         }
         .btn svg {
             width: 24px;
@@ -193,7 +201,7 @@
 
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
-                videoId: 'pTOvpdORoUI',
+                videoId: 'M7lc1UVf-VE',
                 playerVars: {
                     'controls': 0,
                     'disablekb': 1,
@@ -266,12 +274,15 @@
         }
 
         document.getElementById('playPauseBtn').addEventListener('click', function() {
+            console.log('Play button clicked, player:', player, 'isPlaying:', isPlaying);
             if (player) {
                 if (isPlaying) {
                     player.pauseVideo();
                 } else {
                     player.playVideo();
                 }
+            } else {
+                console.log('Player not ready yet');
             }
         });
 
