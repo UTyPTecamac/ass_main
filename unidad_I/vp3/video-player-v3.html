@@ -26,7 +26,7 @@
     .video-container {
       position: relative;
       width: 100%;
-      padding-bottom: 100%;
+      padding-bottom: 98%;
     }
     
     .video-container iframe,
@@ -36,6 +36,13 @@
       left: 0;
       width: 100%;
       height: 100%;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .video-container.playing iframe,
+    .video-container.playing .plyr {
+      opacity: 1;
     }
     
     .video-overlay {
@@ -128,11 +135,13 @@
     player.on('play', () => {
       document.getElementById('playBtn').textContent = '⏸';
       document.getElementById('overlay').style.display = 'none';
+      document.querySelector('.video-container').classList.add('playing');
     });
 
     player.on('pause', () => {
       document.getElementById('playBtn').textContent = '▶';
       document.getElementById('overlay').style.display = 'flex';
+      document.querySelector('.video-container').classList.remove('playing');
     });
 
     function togglePlay() {
