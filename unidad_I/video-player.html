@@ -90,26 +90,37 @@
             width: 18px;
             height: 18px;
         }
-        .btn-play {
+.btn-play {
             position: absolute;
-            left: 16px;
-            bottom: 16px;
-            z-index: 20;
-            background: none;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 100;
+            background: rgba(255, 215, 0, 0.9);
             border: none;
             cursor: pointer;
-            padding: 8px;
+            padding: 0;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: opacity 0.3s;
         }
         .btn-play svg {
-            width: 32px;
-            height: 32px;
-            fill: #FFD700;
+            width: 28px;
+            height: 28px;
+            fill: #fff;
         }
-        .btn-play:hover svg {
-            fill: #FFC107;
+        .video-wrapper:hover .btn-play {
+            opacity: 1;
+        }
+        .btn-play:hover svg#playIcon {
+            display: none;
+        }
+        .btn-play:hover svg#pauseIcon {
+            display: block !important;
         }
         #overlay {
             position: absolute;
@@ -304,19 +315,35 @@
             document.getElementById('loading').style.display = 'none';
         }
 
+        function updatePlayPauseButton() {
+            var playIcon = document.getElementById('playIcon');
+            var pauseIcon = document.getElementById('pauseIcon');
+            if (isPlaying) {
+                playIcon.style.display = 'none';
+                pauseIcon.style.display = 'block';
+            } else {
+                playIcon.style.display = 'block';
+                pauseIcon.style.display = 'none';
+            }
+        }
+
         function onPlayerStateChange(event) {
+            var btn = document.getElementById('playPauseBtn');
             if (event.data == YT.PlayerState.PLAYING) {
                 isPlaying = true;
                 updatePlayPauseButton();
                 startProgressUpdate();
                 document.getElementById('loading').style.display = 'none';
+                btn.style.opacity = '0';
             } else if (event.data == YT.PlayerState.PAUSED || event.data == YT.PlayerState.ENDED) {
                 isPlaying = false;
                 updatePlayPauseButton();
                 stopProgressUpdate();
                 document.getElementById('loading').style.display = 'flex';
+                btn.style.opacity = '1';
             } else if (event.data == YT.PlayerState.BUFFERING) {
                 document.getElementById('loading').style.display = 'flex';
+                btn.style.opacity = '0';
             }
         }
 
