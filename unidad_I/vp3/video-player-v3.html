@@ -10,7 +10,7 @@
     
     body {
       font-family: system-ui, sans-serif;
-      background: #000;
+      background: transparent;
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -49,23 +49,14 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-    
-    .video-container:hover .video-overlay {
-      opacity: 1;
-    }
-    
-    .video-overlay.paused {
-      background: rgba(255, 255, 255, 0.9);
+      background: white;
     }
     
     .play-btn {
       width: 80px;
       height: 80px;
       border-radius: 50%;
-      background: #22c55e;
+      background: #228a6c;
       border: none;
       cursor: pointer;
       display: flex;
@@ -73,13 +64,13 @@
       justify-content: center;
       font-size: 32px;
       color: white;
-      box-shadow: 0 4px 20px rgba(34, 197, 94, 0.5);
+      box-shadow: 0 4px 20px rgba(34, 138, 108, 0.5);
       transition: transform 0.2s ease, background 0.2s ease;
     }
     
     .play-btn:hover {
       transform: scale(1.1);
-      background: #16a34a;
+      background: #1a7a5f;
     }
     
     .play-btn:active {
@@ -90,7 +81,7 @@
       margin-top: 15px;
       font-size: 18px;
       font-weight: 600;
-      color: #22c55e;
+      color: #146049;
     }
     
     .loading {
