@@ -15,12 +15,27 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 20px;
+    }
+    
+    .video-wrapper {
+      width: 100%;
+      max-width: 500px;
     }
     
     .video-container {
       position: relative;
       width: 100%;
-      max-width: 900px;
+      padding-bottom: 100%;
+    }
+    
+    .video-container iframe,
+    .video-container .plyr {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
     }
     
     .video-overlay {
@@ -77,15 +92,23 @@
       font-weight: 600;
       color: #22c55e;
     }
+    
+    .loading {
+      font-size: 16px;
+      color: #666;
+    }
   </style>
 </head>
 <body>
 
-  <div class="video-container">
-    <div id="player" data-plyr-provider="youtube" data-plyr-embed-id="pTOvpdORoUI"></div>
+  <div class="video-wrapper">
+    <div class="video-container">
+      <div id="player" data-plyr-provider="youtube" data-plyr-embed-id="pTOvpdORoUI"></div>
     <div class="video-overlay" id="overlay">
-      <button class="play-btn" id="playBtn" onclick="togglePlay()">▶</button>
-      <div class="label">Modelo Mix</div>
+      <div class="loading" id="loadingText">Preparando contenido...</div>
+      <button class="play-btn" id="playBtn" onclick="togglePlay()" style="display:none">▶</button>
+      <div class="label" id="labelText" style="display:none">Modelo Mix</div>
+    </div>
     </div>
   </div>
 
@@ -104,6 +127,13 @@
       }
     });
 
+    player.on('ready', () => {
+      document.getElementById('loadingText').style.display = 'none';
+      document.getElementById('playBtn').style.display = 'flex';
+      document.getElementById('labelText').style.display = 'block';
+      document.getElementById('overlay').classList.add('paused');
+    });
+
     player.on('play', () => {
       document.getElementById('playBtn').textContent = '⏸';
       document.getElementById('overlay').classList.remove('paused');
@@ -111,10 +141,6 @@
 
     player.on('pause', () => {
       document.getElementById('playBtn').textContent = '▶';
-      document.getElementById('overlay').classList.add('paused');
-    });
-
-    player.on('ready', () => {
       document.getElementById('overlay').classList.add('paused');
     });
 
