@@ -43,11 +43,11 @@
       height: 100%;
       object-fit: cover;
       opacity: 0;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.5s ease;
     }
     
-    .video-container.playing iframe,
-    .video-container.playing .plyr {
+    .video-container.show-video iframe,
+    .video-container.show-video .plyr {
       opacity: 1;
     }
     
@@ -169,25 +169,28 @@
     });
 
     player.on('play', () => {
-      document.getElementById('playBtn').textContent = '⏸';
-      document.querySelector('.video-container').classList.add('playing');
-      
       if (firstPlay) {
         firstPlay = false;
-        document.getElementById('overlay').style.opacity = '0';
+        document.getElementById('playBtn').textContent = '⏸';
         setTimeout(() => {
-          document.getElementById('overlay').style.display = 'none';
-          document.getElementById('overlay').style.opacity = '1';
+          document.querySelector('.video-container').classList.add('show-video');
+          document.getElementById('overlay').style.opacity = '0';
+          setTimeout(() => {
+            document.getElementById('overlay').style.display = 'none';
+          }, 500);
         }, 3000);
       } else {
+        document.getElementById('playBtn').textContent = '⏸';
         document.getElementById('overlay').style.display = 'none';
       }
     });
 
     player.on('pause', () => {
       document.getElementById('playBtn').textContent = '▶';
-      document.getElementById('overlay').style.display = 'flex';
-      document.querySelector('.video-container').classList.remove('playing');
+      if (!firstPlay) {
+        document.getElementById('overlay').style.display = 'flex';
+        document.getElementById('overlay').style.opacity = '1';
+      }
     });
 
     function togglePlay() {
